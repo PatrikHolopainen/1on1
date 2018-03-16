@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import marshal
 import hashlib
 import math
+import timeit
 
-network = nx.DiGraph()
+network = nx.DiGraph() #Create a directed graph
 
-network.add_edges_from(
+network.add_edges_from( #Add edges
     [
     ('1','2'),('1','3'),
     ('2','1'),('2','3'),
@@ -16,30 +17,17 @@ network.add_edges_from(
     ('6','4'),('6','5'),
     ]
 )
-"""
-people = [
-    "Anna",
-    "Olli",
-    "Pekka",
-    "Outi",
-    "Vesa",
-    "Amy",
-    "IÄ",
-    "Ukki",
-    "Laura",
-    "Maria",]
-notOkay = [
-    ("Pekka","Outi"),
-    ("Outi","Pekka"),
-    ("Vesa","Amy"),
-    ("Amy","Vesa"),
-    ("IÄ","Ukki"),
-    ("Ukki","IÄ"),
-    ("Laura","Maria"),
-    ("Maria","Laura"),
-]
-"""
 
+"""
+createCompleteDi(nodes,remove)
+Creates a complete network from given nodes and removes the given edges
+
+INPUT
+nodes: list of nodes (int)
+remove: list of tuples of nodes (inte)
+OUTPUT:
+the created network (networkx.digraph)
+"""
 def createCompleteDi(nodes,remove=[]):
     net = nx.DiGraph()
     for x in nodes:
@@ -48,9 +36,22 @@ def createCompleteDi(nodes,remove=[]):
                 net.add_edge(x,y)
     for x in remove:
         net.remove_edge(x[0],x[1])
-
     return net
 
+
+"""
+solveGraph(net)
+Given a valid network recursively goes through all possible ways of removing
+links in a way that every node ends up with exactly one in and exactly one out
+link, without self-links.
+
+Uses a dictionary to store already calculated subgraphs in order to reduce runtime.
+
+INPUT:
+net: network (networkx.digraph)
+OUTPUT:
+amount of possible divisions (int)
+"""
 def solveGraph(net):
     nodes = net.nodes()
     netlen = len(net)
@@ -58,10 +59,6 @@ def solveGraph(net):
     successors = {}
     for x in nodes:
         successors[x] = net.successors(x)
-
-    def marsh(r):
-        m = marshal.dumps(r)
-        return hashlib.md5(m).hexdigest()
 
     def createCycles(start,availableNodes):
         def inner(node,available,chain):
@@ -81,8 +78,11 @@ def solveGraph(net):
             summedShit += inner(x,availableNodes,[x])
         return summedShit
 
+    def marsh(r):
+        m = marshal.dumps(r)
+        return hashlib.md5(m).hexdigest()
+
     def solveSubGraph(availableNodes):
-        #print(len(solved))
         n = len(availableNodes)
         if n == 0:
             return 1
@@ -92,7 +92,6 @@ def solveGraph(net):
             return (solved[marsh(availableNodes)])
         else:
             startingNode = availableNodes[0]
-            #solved[marsh(availableNodes)] = 1 Test purposes
             solved[marsh(availableNodes)] = createCycles(startingNode,availableNodes)
 
             return (solved[marsh(availableNodes)])
@@ -101,22 +100,30 @@ def solveGraph(net):
 
 
 
+"""
+drawNet(net)
+Draws the given network
 
+INPUT:
+net: network (networkx.digraph)
+"""
 def drawNet(net):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     nx.draw_circular(net,with_labels=True)
     plt.show()
 
-def timeshit():
-    network = nx.gnp_random_graph(10,1,directed=True)
-    networks = []
-    for i in range(1,10):
-        networks.append(nx.gnp_random_graph(i,1,directed=True))
-    for x in networks:
-        print(solveGraph(x))
 
-def calculatePossibilities(n): #Calculates the amount of possible ways to do the draw from a complete network of size n.
+"""
+calculatePossibilities(n)
+Calculates the amount of possible ways to do the draw from a complete network of size n.
+
+INPUT:
+n: amount of nodes (int)
+OUTPUT:
+amonut of possible divisions (int)
+"""
+def calculatePossibilities(n):
     def subtract(k):
         if(k == 1):
             return 1
@@ -124,7 +131,9 @@ def calculatePossibilities(n): #Calculates the amount of possible ways to do the
             return((k)*subtract(k-1)-(-1)**k)
     return(math.factorial(n)-subtract(n))
 
+def takeTime():
+    network = nx.gnp_random_graph(9,1,directed=True)
+    print(solveGraph(network))
+
 if __name__ == '__main__':
-    import timeit
-    #print(timeit.timeit("timeshit()", setup="from __main__ import timeshit", number=1))
-    print(calculatePossibilities(100))
+    print(timeit.timeit("takeTime()", setup="from __main__ import timeshit", number=1))
