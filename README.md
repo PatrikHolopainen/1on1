@@ -1,5 +1,5 @@
 # 1on1
-1on1 is a small Python project that uses the Networx library
+1on1 is a small project that uses the Networx library and Python 3 to calculate divisions of networks.
 ## Problem
 Given a directed no-self-looping network, how many ways are there to divide it so,
 that every node has a an in- and out-degree of exactly 1?
