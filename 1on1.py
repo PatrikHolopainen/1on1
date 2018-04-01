@@ -53,6 +53,7 @@ OUTPUT:
 amount of possible divisions (int)
 """
 def solveGraph(net):
+
     nodes = net.nodes()
     netlen = len(net)
     solved = {}
@@ -79,6 +80,7 @@ def solveGraph(net):
         return summedShit
 
     def marsh(r):
+        #print("r",r)
         m = marshal.dumps(r)
         return hashlib.md5(m).hexdigest()
 
@@ -136,4 +138,4 @@ def takeTime():
     print(solveGraph(network))
 
 if __name__ == '__main__':
-    print(timeit.timeit("takeTime()", setup="from __main__ import timeshit", number=1))
+    print(timeit.timeit("takeTime()", setup="from __main__ import takeTime", number=1))
