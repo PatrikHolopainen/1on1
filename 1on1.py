@@ -80,7 +80,6 @@ def solveGraph(net):
         return summedShit
 
     def marsh(r):
-        #print("r",r)
         m = marshal.dumps(r)
         return hashlib.md5(m).hexdigest()
 
